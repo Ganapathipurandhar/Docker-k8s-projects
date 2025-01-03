@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-run:
-    runs-on: ubuntu-latest
+    runs-on: python:3.10-slim
 
     steps:
       # Checkout the repository

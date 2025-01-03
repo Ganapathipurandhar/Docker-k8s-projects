@@ -5,7 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy only the necessary files to the image
-COPY requirements.txt /app/
+#COPY requirements.txt /app/
 
 # Install the required dependencies in a single layer
 RUN pip install --no-cache-dir -r requirements.txt
