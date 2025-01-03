@@ -8,7 +8,7 @@ on:
 
 jobs:
   capture-logs:
-    runs-on: ubuntu-latest  # Use an appropriate runner
+    runs-on: ubuntu-latest
 
     steps:
       # Checkout the repository
@@ -19,17 +19,19 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # Build the Docker image
+      # Build Docker image (if Dockerfile is in a subdirectory 'docker')
       - name: Build Docker image
         run: |
-          docker build -t get-logs-container examples/first-dockerfile/
+          docker build -t get-logs-container -f docker/Dockerfile examples/first-dockerfile/
 
-      # Run Docker container for logs and capture them in a file
+      # Run Docker container in detached mode, get logs, and remove the container
       - name: Run Docker Container for Logs
         run: |
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock get-logs-container --logs > output-logs.txt
+          container_id=$(docker run -d get-logs-container)  # Start container in detached mode
+          docker logs $container_id > output-logs.txt        # Capture logs
+          docker rm -f $container_id                         # Clean up the container
 
-      # Optionally, display the logs in the GitHub Actions workflow logs
+      # Optionally, display the logs in GitHub Actions workflow logs
       - name: Show logs in GitHub Actions output
         run: |
           cat output-logs.txt
