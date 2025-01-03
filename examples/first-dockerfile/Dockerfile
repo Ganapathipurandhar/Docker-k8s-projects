@@ -8,7 +8,7 @@ WORKDIR /app
 #COPY requirements.txt /app/
 
 # Install the required dependencies in a single layer
-RUN pip install --no-cache-dir -r requirements.txt
+#RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application files
 COPY . /app
