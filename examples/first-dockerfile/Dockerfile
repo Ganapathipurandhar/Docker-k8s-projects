@@ -1,19 +1,20 @@
-# Use the latest Ubuntu image
-FROM ubuntu:latest
+# Use a more lightweight and optimized Python image as the base image
+FROM python:3.10-slim
 
-# Set the working directory in the container
+# Set the working directory in the image
 WORKDIR /app
 
-# Copy the application files into the container
+# Copy only the necessary files to the image
+COPY requirements.txt /app/
+
+# Install the required dependencies in a single layer
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application files
 COPY . /app
 
-# Install the necessary packages
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    pip3 install docker
-
-# Set environment variables (optional, can be removed if not used)
+# Set environment variables
 ENV NAME World
 
-# Default command to run the Python script
-CMD ["python3", "get_logs.py"]
+# Run the application
+CMD ["python", "app.py"]
