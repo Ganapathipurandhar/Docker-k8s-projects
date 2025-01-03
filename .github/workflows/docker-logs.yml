@@ -22,7 +22,7 @@ jobs:
       # Build the Docker image
       - name: Build Docker Image
         run: |
-          docker build -t get-logs-container example/first-dockerfile/
+          docker build -t get-logs-container examples/first-dockerfile/
 
       # Run the Docker container to fetch logs
       - name: Run Docker Container for Logs
