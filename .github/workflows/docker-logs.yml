@@ -22,7 +22,7 @@ jobs:
       # Build Docker image from a specific Dockerfile and context
       - name: Build Docker image
         run: |
-          docker build -t get-logs-container -f examples/first-dockerfile/ .
+          docker build -t get-logs-container -f examples/first-dockerfile/Dockerfile .
 
       # Run Docker container in detached mode, get logs, and remove the container
       - name: Run Docker Container for Logs
