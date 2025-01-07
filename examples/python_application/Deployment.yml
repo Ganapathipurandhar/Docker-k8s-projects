@@ -17,6 +17,22 @@ spec:
       containers:
       - name: python-web-app
         image: gpurandhar/python-web-app:v1
+        env:
+        # Define the environment variable
+        # - name: db-port                                     # From the key name in the ConfigMap.
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: myconfigmap        # The ConfigMap this value comes from.
+        #       key: db-port             # The key to fetch. 
+        volumeMounts:
+        - name: app-config
+          mountPath: "/tmp"
+          readOnly: true      
         ports:
         - containerPort: 8000
-
+      volumes:
+      # You set volumes at the Pod level, then mount them into containers inside that Pod
+      - name: app-config
+        configMap:
+          # Provide the name of the ConfigMap you want to mount.
+          name: myconfigmap
