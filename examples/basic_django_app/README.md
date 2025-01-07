@@ -71,10 +71,11 @@ urlpatterns = [
 
 Create a directory named templates inside the myapp folder and add an home.html file:
 
-
+~~~
 myapp/
 ├── templates/
 │   └── home.html
+~~~
 
 In home.html, add the following content:
 ~~~
