@@ -1,0 +1,137 @@
+## kubectl get command
+alias k=kubevtl
+k get all --> it show all the pod, default namespace
+k get all -A --> it shows the all the resoures in all namespaces
+k get ns
+k get -n uat deployment.apps
+k get -n uat deployment.apps notes-app-deployment -o yml # to get yum output from deployment --> it used to see all the information about app deployment
+
+k get -n uat deployment.apps notes-app-deployment -o yml | grep replicas
+ 
+or 
+// using json output flag
+k get -n uat deployment.apps notes-app-deployment -o=jsonpath='{{.spec.replicas}}'
+
+k get -n uat deployment.apps notes-app-deployment -o=jsonpath='{{.spec.container.spec.container}}'
+
+## kubectl describe
+k get nodes
+k describe node node-name # it get all the information about node cpu, memory, deskspcace, how many pod you can deployment etc
+k describe -n monitoring pod/grafana-68z58cd678-j456 # it provide the information like readness, liveness prob, services True[running or not] and events etc
+
+# kubectl get events
+
+k get events -n monitoring # you can see lot of event under namespace [type of event : normal, warming etc ], resons [what is the reson for event], objects, messages etc
+
+# kubectl logs
+
+k logs -n <namespace-name> <pod-name>
+k logs -n <namespace-name> <pod-name> -all-containers # if you have multiple-container or replica of pods
+it give all the logs in the all the containers, if you want to see the logs from specific containers
+
+k logs -n <namespace-name> <pod-name> -all-containers -o=jsonpath='{{.spec.containers}}' # it give the logs but it hard to read to we can convent to json format "jq"
+k logs -n <namespace-name> <pod-name> -all-containers -o=jsonpath='{{.spec.containers}}' | jq
+now we can see all pods, now use '-c' we can specific the container name [multiple container in the pod]
+
+k logs -n <namespace-name> <multi-container-name> -c nigix-container
+
+# kubectl logs --label
+#if you have multiple pod under same deployment , you can use the label to list the all the pods
+k logs deployments.apps -n uat notes-app-deployements -o yaml | grep labels -A5
+ # using lablels we can get the deatels 
+k logs -u uat -l app=notes-app
+
+## kubctl logs --timestamps, --since=5s
+
+time-stamp is also important, some-time logs didn't show the time-stamp we can use like this 
+
+k logs -u uat -l app=notes-app --timestamp
+
+
+k logs -u uat <pod-name> --since=30s
+
+## kubectl logs  -f or --follow
+it shows the logs dynamically, it useful for testing, debugging etc
+k get -n uat deployment.apps notes-app-deployment -f
+
+## kubetl exec
+k exec  -n dev nginx --ls
+
+k exec  -n dev nginx -it -- /bin/bash   // it is good for dev and staging env , but not for 
+
+## Kubectl port-forwarding
+it is usefull when you want to access internal cluster resourse from within your local network without need of having expose the service to the internet
+it is useful in test phase or this services not ment to be expose to internet 
+
+k get svc -A # select the service with interal custerip 
+
+k port-forward -n uat svc/note-app-deployment 8000:80 [8000 is my computer, 80 is pods port]
+
+k get svc -n uat svc/note-app-deployment -o yaml
+curl localhost:8000 # to access the service
+
+other services
+k port-forward -n kubernetes-dashboard kubernetes-dashboard-web 8000:8000
+in local brower : http://localhost:8080
+
+## kubectl auth can-I
+
+it falls under RBAC, it use to conform wether I can access or not 
+
+k auth can-i list pod -n monitoring --> yes 
+
+for current use : k auth whoami 
+for roles : k auth roles
+k get role pod-reader -o yaml
+k get rolebindings
+k get rolebinding <name-of-rolebinding> -o yaml
+k auth can-i get pod --as=jane ---> yes
+k auth can-i delete pod --as=jane ---> no
+k auth can-i get pod --as=system:serviceaccount:default:default ---> yes
+k auth can-i delete pod --as=system:serviceaccount:default:default ---> no
+
+verbose --v=1..10
+k auth can-i get pod --as=jane --v=10 # it will give the more information about it
+
+# kubetl top
+k get nodes, k get pods, k get pods -o wide
+similarly top command give the information of cpu,memory of pod and nodes [this servers user the resourses]
+k top nodes
+k top pods
+it is reasonable for metrics server in Kubernetes [without metrics server we won't get top result]  
+
+## kubectl explain
+it command helps us for documentation alternative for api resources 
+k explain 
+k explain pod
+k explain pod.spec.securitycontent --recursive
+
+## kubectl diff
+
+it uses to cross-verify , it unknowing changes any thing
+
+cat redis.yml
+k appy -f redis.yml
+how by mistake i change the replica to 2-->3
+now i use diff
+k diff  -f redis.yml
+you can see the changes [like git diff]
+
+# kubectl debug
+- minimize the pod disruptions , kubectl will attach the container to the exiting container without causing any disruptions to the already running container
+- distroless images : it is bare minium images , it don't have any shell, it only have application run time packages 
+- crushed/crushing containers etc
+k get pods --> if you have a distroless images then sometime you will not exec in to the container [k exec -it destroless-dubug-pod -- /bin/bash]--> though error
+
+
+
+
+
+
+
+
+
+
+
+
+
