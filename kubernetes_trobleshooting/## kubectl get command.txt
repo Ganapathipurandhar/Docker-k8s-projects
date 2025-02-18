@@ -125,6 +125,23 @@ k get pods --> if you have a distroless images then sometime you will not exec i
 
 
 
+image pull error
+crushing pods
+pending pods
+case of missing pods
+schrodinger's deployment
+create a container error
+config out of date
+endlessly terminating pods
+feild immutability
+enableServicelinks
+interns can see our secrets
+rbac --> port mania,unreable pod + leaky network polices
+ingress
+multi-attached volumeerrors
+
+
+
 
 
 
