@@ -107,11 +107,83 @@ k apply -f redis.yaml
 k diff -f redis.yaml  # Shows the differences between the current state and the desired state
 ```
 
-## `kubectl debug`
+# Kubectl Debug
 
-```bash
-k get pods  # Lists all pods
-k debug <pod-name>  # Attaches a debug container to a running pod
+## Why Use `kubectl debug`?
+
+- **Minimize Pod Disruptions**: Avoid accidental disruptions in production environments by attaching another container to an existing container without causing disruptions.
+- **Distroless Images**: 
+  - These images do not have extra dependencies or packages.
+  - Improve security by reducing the attack surface of the container.
+  - Lightweight, making them faster.
+- **Crashed Container**: Helps investigate a crashing container.
+
+---
+
+## `kubectl exec` Limitation
+
+We cannot use the `exec` command on distroless images.
+
+```sh
+k get pods
+k exec -it destro-debug-pod -- /bin/bash  # Throws error: internal error occurred
 ```
 
-Save this file as `kubectl-cheatsheet.md` for easy reference!
+Instead, use `kubectl debug`:
+
+```sh
+k debug destroless-debug-pod -it --image=busybox  # Uses nettools image
+```
+
+**Note**: Resources used by the ephemeral container are shared by the entire pod.
+
+---
+
+## `--target` Option
+
+You can use `--target` to specify the main container you want to debug.
+
+```sh
+k apply -f nginx.yaml  # Creates an Nginx container
+k debug nginx-pod -it --image=busybox  # Running 'ps aux' inside will execute on busybox
+
+k debug -it nginx-pod --image=busybox --target=nginx
+# Now, running 'ps aux' will execute on nginx
+```
+
+You can navigate through other containers using the process filesystem:
+
+```sh
+cd /proc
+cd 1
+ls
+cd root
+ls
+cd etc/nginx
+cat nginx.config
+```
+
+---
+
+## `--copy-to` Option
+
+Create a new pod by combining the `busybox` container with `nginx-pod`:
+
+```sh
+k debug nginx-pod -it --image=busybox --copy-to=debugging-pod --share-processes
+```
+
+Now, list the pods:
+
+```sh
+k get pods  # You will see a new container
+```
+
+To describe the newly created pod:
+
+```sh
+k describe pod debugging-pod  # In this case, busybox is not an ephemeral container
+```
+
+**Note**: If a service is forwarding traffic to the pod, the new pod will not be owned by the deployment and will not share labels with the original pod, preventing unintended traffic.
+
