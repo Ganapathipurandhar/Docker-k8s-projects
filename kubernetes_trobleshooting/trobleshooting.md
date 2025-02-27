@@ -187,3 +187,46 @@ k describe pod debugging-pod  # In this case, busybox is not an ephemeral contai
 
 **Note**: If a service is forwarding traffic to the pod, the new pod will not be owned by the deployment and will not share labels with the original pod, preventing unintended traffic.
 
+# Create the markdown content as a string
+markdown_content = """
+# Exit Codes and Their Meanings
+
+| **Exit Code** | **Reason**                                                                 | **Range**    |
+|---------------|-----------------------------------------------------------------------------|--------------|
+| **0**         | Successful execution. The program has completed its task without errors.    | Success      |
+| **1**         | General error. The command failed, but no specific reason is provided.       | Error        |
+| **2**         | Misuse of shell built-ins or syntax error.                                  | Error        |
+| **126**       | Command invoked cannot execute (e.g., missing execute permissions).         | Error        |
+| **127**       | Command not found. The shell cannot find the command in the PATH.           | Error        |
+| **128**       | Invalid argument to exit.                                                   | Error        |
+| **130**       | Script terminated by Control-C (SIGINT).                                    | Error        |
+| **137**       | Process terminated by signal 9 (SIGKILL).                                  | Error        |
+| **139**       | Segmentation fault (SIGSEGV).                                               | Error        |
+| **200**       | OK. The operation completed successfully with some non-fatal issues.        | Success      |
+| **201**       | Partial success. Some tasks completed, but others did not.                  | Warning      |
+| **202**       | Task completed with warnings.                                               | Warning      |
+| **300**       | Resource unavailable. Typically used for unavailable service or network.   | Warning/Error|
+| **301**       | Invalid user input. The provided input was not in the expected format.      | Error        |
+| **302**       | Command timed out due to network or resource issues.                        | Error        |
+| **400**       | Client-side error (bad request). The client made a request that the server could not process due to an error in the request. | Error        |
+| **401**       | Unauthorized access. The operation requires authentication.                | Error        |
+| **402**       | Payment required. Typically used for subscription-based services.          | Error        |
+| **403**       | Forbidden. The server understands the request but refuses to authorize it. | Error        |
+| **404**       | Not found. The requested resource could not be found on the server.         | Error        |
+| **405**       | Method not allowed. The HTTP method used is not allowed for the requested resource. | Error        |
+| **500**       | Internal server error. The server encountered an unexpected condition.     | Error        |
+| **501**       | Not implemented. The server does not support the functionality required to fulfill the request. | Error        |
+| **502**       | Bad gateway. The server received an invalid response from the upstream server. | Error        |
+| **503**       | Service unavailable. The server is currently unavailable, typically due to being overloaded. | Error        |
+| **504**       | Gateway timeout. The server did not receive a timely response from an upstream server. | Error        |
+| **505**       | HTTP version not supported. The server does not support the HTTP protocol version used in the request. | Error        |
+"""
+
+# Save it as a markdown file
+file_path = "/mnt/data/exit_codes.md"
+with open(file_path, "w") as file:
+    file.write(markdown_content)
+
+file_path
+
+
